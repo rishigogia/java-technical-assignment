@@ -38,7 +38,9 @@ class BasketTest {
                 aSingleItemPricedByWeight(),
                 multipleItemsPricedByWeight(),
                 aSingleItemPricedPerUnitWithDiscountCode(),
-                aSingleWeightItemLessWeightWithDiscountCode()
+                aSingleWeightItemLessWeightWithDiscountCode(),
+                twoItemPricedPerUnitWithDiscountCode(),
+                aSingleWeightItemFullWeightWithDiscountCode()
         );
     }
 
@@ -70,11 +72,39 @@ class BasketTest {
         return Arguments.of("a single item priced per unit with Buy one get one discount", "0.49", Collections.singleton(aPintOfMilkWithDiscount()));
     }
 
+    private static Arguments twoItemPricedPerUnitWithDiscountCode() {
+        Mockito.when(buyOneGetOneFreeDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(new BigDecimal("0.49"));
+        return Arguments.of("two items priced per unit with Buy one get one discount", "0.49", Arrays.asList(aPintOfMilkWithDiscount(), aPintOfMilkWithDiscount()));
+    }
+
     private static Arguments aSingleWeightItemLessWeightWithDiscountCode() {
         Mockito.when(less50pForOneKiloDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(new BigDecimal("0.00"));
         return Arguments.of("an item with less than threshold weight with discount code", "0.60", Collections.singleton(twoHundredGramsOfPickAndMixWithDiscount()));
     }
 
+    private static Arguments aSingleWeightItemFullWeightWithDiscountCode() {
+        Mockito.when(less50pForOneKiloDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(new BigDecimal("0.50"));
+        return Arguments.of("an item equal to threshold weight with discount code", "2.49", Collections.singleton(oneKiloOfPickAndMixWithDiscount()));
+    }
+
+    private static Arguments multipleUnitItemWithAndWithoutDiscountCodes() {
+        Mockito.when(buyOneGetOneFreeDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(new BigDecimal("0.49"));
+        return Arguments.of("multiple unit items with and without discount codes", "2.04",
+                Arrays.asList(aPintOfMilkWithDiscount(), aPackOfDigestives(), aPintOfMilkWithDiscount()));
+    }
+
+    private static Arguments multipleWeightItemWithAndWithoutDiscountCodes() {
+        Mockito.when(less50pForOneKiloDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(new BigDecimal("0.50"));
+        return Arguments.of("multiple weight items with and without discount codes", "3.74",
+                Arrays.asList(oneKiloOfPickAndMixWithDiscount(), twoFiftyGramsOfAmericanSweets()));
+    }
+
+    private static Arguments weightItemAndUnitItemWithAndWithoutDiscountCodes() {
+        Mockito.when(buyOneGetOneFreeDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(new BigDecimal("0.49"));
+        Mockito.when(less50pForOneKiloDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(new BigDecimal("0.50"));
+        return Arguments.of("weight items along with unit items both with/without discount codes", "5.78",
+                Arrays.asList(aPintOfMilkWithDiscount(), oneKiloOfPickAndMixWithDiscount(), aPintOfMilkWithDiscount(), twoFiftyGramsOfAmericanSweets(), aPackOfDigestives()));
+    }
     private static Item aPintOfMilk() {
         return new Product(new BigDecimal("0.49")).oneOf();
     }
@@ -114,5 +144,9 @@ class BasketTest {
 
     private static Item twoHundredGramsOfPickAndMixWithDiscount() {
         return aKiloOfPickAndMixWithDiscount().weighing(new BigDecimal(".2"));
+    }
+
+    private static Item oneKiloOfPickAndMixWithDiscount() {
+        return aKiloOfPickAndMixWithDiscount().weighing(new BigDecimal("1"));
     }
 }
