@@ -14,7 +14,14 @@ public class BuyOneGetOneFreeDiscount implements Discount {
 
     @Override
     public BigDecimal getDiscountAmount(List<Item> itemList) {
-        return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        final BigDecimal total = itemList.stream()
+                .filter(item -> item instanceof ItemByUnit)
+                .map(Item::price)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+        return (itemList.size() > 0 ? total.divide(new BigDecimal(itemList.size()))
+                .multiply(new BigDecimal(itemList.size()/2)) : BigDecimal.ZERO)
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     @Override
