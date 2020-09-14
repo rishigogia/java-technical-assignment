@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class BasketTest {
 
     private static Discount buyOneGetOneFreeDiscount = Mockito.mock(Discount.class);
+    private static Discount less50pForOneKiloDiscount = Mockito.mock(Discount.class);;
 
     @DisplayName("basket provides its total value when containing...")
     @MethodSource
@@ -36,7 +37,8 @@ class BasketTest {
                 multipleItemsPricedPerUnit(),
                 aSingleItemPricedByWeight(),
                 multipleItemsPricedByWeight(),
-                aSingleItemPricedPerUnitWithDiscountCode()
+                aSingleItemPricedPerUnitWithDiscountCode(),
+                aSingleWeightItemLessWeightWithDiscountCode()
         );
     }
 
@@ -66,6 +68,11 @@ class BasketTest {
     private static Arguments aSingleItemPricedPerUnitWithDiscountCode() {
         Mockito.when(buyOneGetOneFreeDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(new BigDecimal("0.00"));
         return Arguments.of("a single item priced per unit with Buy one get one discount", "0.49", Collections.singleton(aPintOfMilkWithDiscount()));
+    }
+
+    private static Arguments aSingleWeightItemLessWeightWithDiscountCode() {
+        Mockito.when(less50pForOneKiloDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(new BigDecimal("0.00"));
+        return Arguments.of("an item with less than threshold weight with discount code", "0.60", Collections.singleton(twoHundredGramsOfPickAndMixWithDiscount()));
     }
 
     private static Item aPintOfMilk() {
@@ -98,4 +105,14 @@ class BasketTest {
         return milkPint.oneOf();
     }
 
+    private static WeighedProduct aKiloOfPickAndMixWithDiscount() {
+
+        final WeighedProduct aKiloOfPickAndMix = new WeighedProduct(new BigDecimal("2.99"));
+        aKiloOfPickAndMix.setDiscount(less50pForOneKiloDiscount);
+        return aKiloOfPickAndMix;
+    }
+
+    private static Item twoHundredGramsOfPickAndMixWithDiscount() {
+        return aKiloOfPickAndMixWithDiscount().weighing(new BigDecimal(".2"));
+    }
 }
