@@ -30,7 +30,7 @@ class BuyOneGetOneFreeDiscountTest {
     private static Arguments noItems() {
         return Arguments.of(
                 "there are no items, no discount is added",
-                new BuyOneGetOneFreeDiscount(),
+                new BuyOneGetOneFreeDiscount("BOGO"),
                 Collections.emptyList(),
                 "0.00");
     }
