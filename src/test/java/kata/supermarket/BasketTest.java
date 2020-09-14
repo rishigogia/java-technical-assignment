@@ -20,6 +20,7 @@ class BasketTest {
 
     private static Discount buyOneGetOneFreeDiscount = Mockito.mock(Discount.class);
     private static Discount less50pForOneKiloDiscount = Mockito.mock(Discount.class);;
+    private static Discount noDiscount = Mockito.mock(Discount.class);
 
     @DisplayName("basket provides its total value when containing...")
     @MethodSource
@@ -71,8 +72,8 @@ class BasketTest {
     }
 
     private static Arguments aSingleItemPricedPerUnitWithDiscountCode() {
-        Mockito.when(buyOneGetOneFreeDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(new BigDecimal("0.00"));
-        return Arguments.of("a single item priced per unit with Buy one get one discount", "0.49", Collections.singleton(aPintOfMilkWithDiscount()));
+        Mockito.when(noDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(BigDecimal.ZERO);
+        return Arguments.of("a single item priced per unit with Buy one get one discount", "0.49", Collections.singleton(aSinglePintOfMilkWithDiscount()));
     }
 
     private static Arguments twoItemPricedPerUnitWithDiscountCode() {
@@ -81,8 +82,8 @@ class BasketTest {
     }
 
     private static Arguments aSingleWeightItemLessWeightWithDiscountCode() {
-        Mockito.when(less50pForOneKiloDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(new BigDecimal("0.00"));
-        return Arguments.of("an item with less than threshold weight with discount code", "0.60", Collections.singleton(twoHundredGramsOfPickAndMixWithDiscount()));
+        Mockito.when(noDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(BigDecimal.ZERO);
+        return Arguments.of("an item with less than threshold weight with discount code", "1.50", Collections.singleton(fiveHundredGramsOfAmericanSweetsWithDiscount()));
     }
 
     private static Arguments aSingleWeightItemFullWeightWithDiscountCode() {
@@ -138,6 +139,12 @@ class BasketTest {
         return milkPint.oneOf();
     }
 
+    private static Item aSinglePintOfMilkWithDiscount() {
+        final Product milkPint = new Product(new BigDecimal("0.49"));
+        milkPint.setDiscount(noDiscount);
+        return milkPint.oneOf();
+    }
+
     private static WeighedProduct aKiloOfPickAndMixWithDiscount() {
 
         final WeighedProduct aKiloOfPickAndMix = new WeighedProduct(new BigDecimal("2.99"));
@@ -145,8 +152,19 @@ class BasketTest {
         return aKiloOfPickAndMix;
     }
 
+    private static WeighedProduct aKiloOfAmericanSweetsWithDiscount() {
+
+        final WeighedProduct aKiloOfPickAndMix = new WeighedProduct(new BigDecimal("2.99"));
+        aKiloOfPickAndMix.setDiscount(noDiscount);
+        return aKiloOfPickAndMix;
+    }
+
     private static Item twoHundredGramsOfPickAndMixWithDiscount() {
         return aKiloOfPickAndMixWithDiscount().weighing(new BigDecimal(".2"));
+    }
+
+    private static Item fiveHundredGramsOfAmericanSweetsWithDiscount() {
+        return aKiloOfAmericanSweetsWithDiscount().weighing(new BigDecimal(".5"));
     }
 
     private static Item oneKiloOfPickAndMixWithDiscount() {
