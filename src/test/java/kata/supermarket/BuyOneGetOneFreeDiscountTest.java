@@ -24,7 +24,9 @@ class BuyOneGetOneFreeDiscountTest {
 
     static Stream<Arguments> receivedDiscount() {
         return Stream.of(
-                noItems()
+                noItems(),
+                singleItemNoDiscount(),
+                discountOnTwoItemsWithSamePrice()
         );
     }
     private static Arguments noItems() {
@@ -33,5 +35,27 @@ class BuyOneGetOneFreeDiscountTest {
                 new BuyOneGetOneFreeDiscount("BOGO"),
                 Collections.emptyList(),
                 "0.00");
+    }
+
+    private static Arguments singleItemNoDiscount() {
+        return Arguments.of(
+                "When there is a single item added, there is no discount",
+                new BuyOneGetOneFreeDiscount("BOGO"),
+                Collections.singletonList(milkPackOfOnePint()),
+                "0.00");
+    }
+
+    private static Arguments discountOnTwoItemsWithSamePrice() {
+        return Arguments.of(
+                "there are two items, discount is applied",
+                new BuyOneGetOneFreeDiscount("BOGO"),
+                Arrays.asList(milkPackOfOnePint(), milkPackOfOnePint()),
+                "0.49");
+    }
+
+    private static Item milkPackOfOnePint() {
+        final Product milkPint = new Product(new BigDecimal("0.49"));
+        milkPint.setDiscount(new BuyOneGetOneFreeDiscount("BOGO"));
+        return milkPint.oneOf();
     }
 }
