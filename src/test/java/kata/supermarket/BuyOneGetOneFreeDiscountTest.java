@@ -91,5 +91,4 @@ class BuyOneGetOneFreeDiscountTest {
         milkPint.setDiscount(new BuyOneGetOneFreeDiscount("BOGO"));
         return milkPint.oneOf();
     }
-
 }
