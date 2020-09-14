@@ -4,6 +4,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -12,7 +15,10 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@RunWith(MockitoJUnitRunner.class)
 class BasketTest {
+
+    private static Discount buyOneGetOneFreeDiscount = Mockito.mock(Discount.class);
 
     @DisplayName("basket provides its total value when containing...")
     @MethodSource
@@ -29,7 +35,8 @@ class BasketTest {
                 aSingleItemPricedPerUnit(),
                 multipleItemsPricedPerUnit(),
                 aSingleItemPricedByWeight(),
-                multipleItemsPricedByWeight()
+                multipleItemsPricedByWeight(),
+                aSingleItemPricedPerUnitWithDiscountCode()
         );
     }
 
@@ -56,6 +63,11 @@ class BasketTest {
         return Arguments.of("no items", "0.00", Collections.emptyList());
     }
 
+    private static Arguments aSingleItemPricedPerUnitWithDiscountCode() {
+        Mockito.when(buyOneGetOneFreeDiscount.getDiscountAmount(Mockito.anyList())).thenReturn(new BigDecimal("0.00"));
+        return Arguments.of("a single item priced per unit with Buy one get one discount", "0.49", Collections.singleton(aPintOfMilkWithDiscount()));
+    }
+
     private static Item aPintOfMilk() {
         return new Product(new BigDecimal("0.49")).oneOf();
     }
@@ -79,4 +91,11 @@ class BasketTest {
     private static Item twoHundredGramsOfPickAndMix() {
         return aKiloOfPickAndMix().weighing(new BigDecimal(".2"));
     }
+
+    private static Item aPintOfMilkWithDiscount() {
+        final Product milkPint = new Product(new BigDecimal("0.49"));
+        milkPint.setDiscount(buyOneGetOneFreeDiscount);
+        return milkPint.oneOf();
+    }
+
 }
