@@ -14,6 +14,13 @@ public class Less50pForOneKiloDiscount implements Discount {
 
     @Override
     public BigDecimal getDiscountAmount(List<Item> itemList) {
-        return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        final BigDecimal netWeight = itemList.stream()
+                .filter(item -> item instanceof ItemByWeight)
+                .map(Item::getWeightInKilos)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO)
+                .setScale(2, RoundingMode.HALF_UP);
+
+        return netWeight.doubleValue() >= 1.0 ? new BigDecimal("0.50") : new BigDecimal("0.00");
     }
 }
