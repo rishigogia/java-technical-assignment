@@ -26,7 +26,10 @@ class BuyOneGetOneFreeDiscountTest {
         return Stream.of(
                 noItems(),
                 singleItemNoDiscount(),
-                discountOnTwoItemsWithSamePrice()
+                discountOnTwoItemsWithSamePrice(),
+                discountOnTwoItemsWithDifferentPrices(),
+                discountAppliedOnlyForEvenNumberOfItemsOddItemHigherPriceNotDiscounted(),
+                discountAppliedForEvenNumberOfItemsCheaperOnesBecomeFree()
         );
     }
     private static Arguments noItems() {
@@ -53,9 +56,40 @@ class BuyOneGetOneFreeDiscountTest {
                 "0.49");
     }
 
+    private static Arguments discountOnTwoItemsWithDifferentPrices() {
+        return Arguments.of(
+                "there are two items with different prices, cheaper one becomes free",
+                new BuyOneGetOneFreeDiscount("BOGO"),
+                Arrays.asList(milkPackOfOnePint(), milkPackOfTwoPints()),
+                "0.49");
+    }
+
+    private static Arguments discountAppliedOnlyForEvenNumberOfItemsOddItemHigherPriceNotDiscounted() {
+        return Arguments.of(
+                "there are three items, cheaper one becomes free",
+                new BuyOneGetOneFreeDiscount("BOGO"),
+                Arrays.asList(milkPackOfOnePint(), milkPackOfTwoPints(), milkPackOfTwoPints()),
+                "0.49");
+    }
+
+    private static Arguments discountAppliedForEvenNumberOfItemsCheaperOnesBecomeFree() {
+        return Arguments.of(
+                "there are three items, cheaper one becomes free",
+                new BuyOneGetOneFreeDiscount("BOGO"),
+                Arrays.asList(milkPackOfOnePint(), milkPackOfTwoPints(), milkPackOfOnePint(), milkPackOfTwoPints()),
+                "0.98");
+    }
+
     private static Item milkPackOfOnePint() {
         final Product milkPint = new Product(new BigDecimal("0.49"));
         milkPint.setDiscount(new BuyOneGetOneFreeDiscount("BOGO"));
         return milkPint.oneOf();
     }
+
+    private static Item milkPackOfTwoPints() {
+        final Product milkPint = new Product(new BigDecimal("0.99"));
+        milkPint.setDiscount(new BuyOneGetOneFreeDiscount("BOGO"));
+        return milkPint.oneOf();
+    }
+
 }
