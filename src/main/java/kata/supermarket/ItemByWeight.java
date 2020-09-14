@@ -20,4 +20,9 @@ public class ItemByWeight implements Item {
     public Discount getDiscount() {
         return product.getDiscount();
     }
+
+    @Override
+    public BigDecimal getWeightInKilos() {
+        return this.weightInKilos;
+    }
 }
