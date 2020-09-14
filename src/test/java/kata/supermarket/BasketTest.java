@@ -40,7 +40,10 @@ class BasketTest {
                 aSingleItemPricedPerUnitWithDiscountCode(),
                 aSingleWeightItemLessWeightWithDiscountCode(),
                 twoItemPricedPerUnitWithDiscountCode(),
-                aSingleWeightItemFullWeightWithDiscountCode()
+                aSingleWeightItemFullWeightWithDiscountCode(),
+                multipleUnitItemWithAndWithoutDiscountCodes(),
+                multipleWeightItemWithAndWithoutDiscountCodes(),
+                weightItemAndUnitItemWithAndWithoutDiscountCodes()
         );
     }
 
