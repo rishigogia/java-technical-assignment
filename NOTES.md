@@ -11,6 +11,6 @@ However, I've tried to make sure the existing functionality is not impacted, (al
 
 For e.g.
 - Discount is associated with a product, therefore Discount has been added to both the product classes.
+- Discount object in product has a getter/setter. This is done with an assumption that discounts on product can be updated/removed.
 - Discount must be returned by the item, therefore discount (from the product the item is created from) is also returning the discount.
 - Another functionality is added to Item interface to fetch the weight (because this was required to get the discount amount). But this is made default, so no classes would have to implement it, that don't need it. At the moment the name is `getWeightInKilos()`, however it can simply be renamed to `getQuantity()`
- 
